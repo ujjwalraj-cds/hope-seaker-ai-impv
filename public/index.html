@@ -1,1 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f8">
+  <meta name="description" content="Hope Seeker is a community disaster-response coordination prototype for SOS reporting, location sharing, and volunteer coordination.">
+  <title>Hope Seeker | Emergency Response Coordination</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="emergency-notice" id="disclaimerBanner" role="note">
+    <span class="notice-mark" aria-hidden="true">!</span>
+    <p><strong>Prototype only.</strong> This website does not dispatch emergency services. In India, call <a href="tel:112">112</a> for emergencies. Ambulance: <a href="tel:108">108</a>; fire: <a href="tel:101">101</a>.</p>
+  </div>
 
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Hope Seeker home">
+      <span class="brand-mark" aria-hidden="true">H</span>
+      <span class="brand-copy"><strong>Hope Seeker</strong><small>Community response coordination</small></span>
+    </a>
+    <div class="header-right">
+      <span class="prototype-label">DEMO ENVIRONMENT</span>
+      <div class="system-status" aria-label="Network status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="networkStatus">Network: ONLINE</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <section class="page-intro">
+      <div>
+        <p class="eyebrow">DISASTER RESPONSE WORKSPACE</p>
+        <h1>Response overview</h1>
+        <p class="intro-copy">Report a situation, review nearby resources, and test community response workflows from one place.</p>
+      </div>
+      <div class="intro-note"><span class="intro-note-icon" aria-hidden="true">i</span><span>Demo data may be simulated. Verify all details before acting on them.</span></div>
+    </section>
+
+    <div class="workspace">
+      <aside class="left-column">
+        <section class="panel sos-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">URGENT REPORTING</p><h2>Request emergency help</h2></div>
+            <span class="status-pill status-danger">SOS</span>
+          </div>
+          <p class="panel-copy">Share your location and a short voice note. If you are in immediate danger, call emergency services first.</p>
+          <div class="sos-container">
+            <button class="sos-button" id="sosBtn" type="button" aria-describedby="sosHint">
+              <span class="sos-symbol" aria-hidden="true">SOS</span>
+              <span class="sos-button-label" id="sosBtnLabel">START VOICE REPORT</span>
+            </button>
+            <p class="sos-hint" id="sosHint">The browser may ask for microphone and location permission. Audio recording is limited to 30 seconds.</p>
+            <div class="visualizer-container" id="visualizer" aria-label="Audio recording in progress">
+              <svg class="waveform-svg" viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
+                <rect class="waveform-bar" x="2" y="2" width="4" height="16" rx="2"></rect>
+                <rect class="waveform-bar" x="10" y="2" width="4" height="16" rx="2"></rect>
+                <rect class="waveform-bar" x="18" y="2" width="4" height="16" rx="2"></rect>
+                <rect class="waveform-bar" x="26" y="2" width="4" height="16" rx="2"></rect>
+                <rect class="waveform-bar" x="34" y="2" width="4" height="16" rx="2"></rect>
+                <rect class="waveform-bar" x="42" y="2" width="4" height="16" rx="2"></rect>
+                <rect class="waveform-bar" x="50" y="2" width="4" height="16" rx="2"></rect>
+                <rect class="waveform-bar" x="58" y="2" width="4" height="16" rx="2"></rect>
+                <rect class="waveform-bar" x="66" y="2" width="4" height="16" rx="2"></rect>
+                <rect class="waveform-bar" x="74" y="2" width="4" height="16" rx="2"></rect>
+                <rect class="waveform-bar" x="82" y="2" width="4" height="16" rx="2"></rect>
+                <rect class="waveform-bar" x="90" y="2" width="4" height="16" rx="2"></rect>
+              </svg>
+            </div>
+          </div>
+          <div class="sos-footnote"><span class="mini-icon" aria-hidden="true">⌖</span><span>Current map position is used for the demonstration request.</span></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading"><div><p class="eyebrow">SYSTEM ACTIVITY</p><h2>Recent activity</h2></div><span class="small-label">LOCAL SESSION</span></div>
+          <div class="console-body" id="consoleLogs" role="log" aria-live="polite" aria-relevant="additions text">
+            <div class="console-line"><span class="console-time">--:--:--</span><span>Waiting for application status…</span></div>
+          </div>
+        </section>
+
+        <section class="panel connectivity-panel">
+          <div class="toggle-switch">
+            <div><h2 class="panel-subtitle">Low-connectivity test</h2><p class="muted-copy">Preview fallback links for a simulated connection loss.</p></div>
+            <label class="switch"><input type="checkbox" id="offlineToggle" aria-controls="fallbackBox"><span class="slider"></span></label>
+          </div>
+          <div class="fallback-box" id="fallbackBox">
+            <p><strong>Fallback mode is simulated.</strong> Review the location and message before sending it using your device's messaging app.</p>
+            <div class="fallback-buttons">
+              <a href="#" class="fallback-link link-sms" id="smsLink" target="_blank" rel="noopener noreferrer">Prepare SMS</a>
+              <a href="#" class="fallback-link link-whatsapp" id="whatsappLink" target="_blank" rel="noopener noreferrer">Prepare WhatsApp</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading"><div><p class="eyebrow">COMMUNITY</p><h2>Check in or volunteer</h2></div></div>
+          <div class="tabs-container" role="tablist" aria-label="Community actions">
+            <button class="tab-btn active" id="tabCheckIn" type="button" role="tab" aria-controls="checkInFormPanel" aria-selected="true">I'm safe</button>
+            <button class="tab-btn" id="tabRegisterVol" type="button" role="tab" aria-controls="volunteerFormPanel" aria-selected="false">Volunteer</button>
+          </div>
+          <div id="checkInFormPanel" role="tabpanel" aria-labelledby="tabCheckIn">
+            <p class="muted-copy form-intro">Submit a community safety check-in using the current map position.</p>
+            <form id="checkInForm">
+              <div class="form-group"><label for="checkInName">Name</label><input type="text" id="checkInName" class="form-control" placeholder="Your name" autocomplete="name" required></div>
+              <div class="form-group"><label for="checkInPhone">Phone number <span class="optional">(optional)</span></label><input type="tel" id="checkInPhone" class="form-control" placeholder="+91…" autocomplete="tel"></div>
+              <div class="form-group"><label for="checkInNote">Short message <span class="optional">(optional)</span></label><input type="text" id="checkInNote" class="form-control" placeholder="e.g. Safe at home"></div>
+              <button type="submit" class="btn btn-green">Submit safety check-in</button>
+            </form>
+          </div>
+          <div id="volunteerFormPanel" role="tabpanel" aria-labelledby="tabRegisterVol" style="display:none">
+            <p class="muted-copy form-intro">Register a simulated volunteer near the selected map location.</p>
+            <form id="volRegisterForm">
+              <div class="form-group"><label for="volName">Name</label><input type="text" id="volName" class="form-control" placeholder="Volunteer name" autocomplete="name" required></div>
+              <fieldset class="form-group fieldset-reset"><legend>Skills</legend><div class="checkbox-group">
+                <label class="checkbox-item"><input type="checkbox" name="skills" value="First Aid/Medical"> Medical aid</label>
+                <label class="checkbox-item"><input type="checkbox" name="skills" value="Swimmer/Boat Owner"> Swimming / boat</label>
+                <label class="checkbox-item"><input type="checkbox" name="skills" value="General Aid (Food/Shelter)"> Food / shelter</label>
+                <label class="checkbox-item"><input type="checkbox" name="skills" value="Blood Donor"> Blood donor</label>
+              </div></fieldset>
+              <div class="form-group"><label for="volBlood">Blood group</label><select id="volBlood" class="form-control"><option value="O+">O+</option><option value="O-">O-</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option></select></div>
+              <button type="submit" class="btn">Register simulated volunteer</button>
+            </form>
+          </div>
+        </section>
+
+        <section class="panel tools-panel">
+          <div class="panel-heading"><div><p class="eyebrow">DEMO CONTROLS</p><h2>Simulation tools</h2></div></div>
+          <p class="muted-copy">Use these controls to test map and data behaviour. They do not contact emergency services.</p>
+          <div class="tool-buttons"><button class="btn btn-secondary" id="btnReportHazard" type="button">Report a hazard</button><button class="btn btn-danger" id="btnResetDB" type="button">Reset demo data</button></div>
+        </section>
+      </aside>
+
+      <section class="right-column">
+        <section class="panel map-panel">
+          <div class="panel-heading map-panel-heading">
+            <div><p class="eyebrow">GEOGRAPHIC VIEW</p><h2>Response map</h2><p class="muted-copy">Select a point on the map to simulate a different location.</p></div>
+            <span class="status-pill status-neutral">MAP DATA</span>
+          </div>
+          <div class="map-explainer">
+            <span class="map-explainer-icon" aria-hidden="true">i</span>
+            <p><strong>The map is separate from AI.</strong> Your configured AI provider interprets emergency text (and supported audio); Leaflet displays the map using OpenStreetMap map tiles. If the map is blank, check your internet connection, browser console, and tile-provider availability.</p>
+          </div>
+          <div class="map-legend" aria-label="Map marker legend">
+            <span><i class="legend-dot legend-user"></i> Selected location</span>
+            <span><i class="legend-dot legend-volunteer"></i> Volunteers</span>
+            <span><i class="legend-dot legend-authority"></i> Authorities</span>
+            <span><i class="legend-dot legend-shelter"></i> Shelters</span>
+            <span><i class="legend-dot legend-hazard"></i> Hazards</span>
+          </div>
+          <div id="map" aria-label="Interactive response map"></div>
+          <div class="map-footer"><span>Map data © OpenStreetMap contributors</span><span>Locations and responders may be simulated</span></div>
+        </section>
+
+        <div class="dispatch-details">
+          <section class="panel incident-panel">
+            <div class="panel-heading"><div><p class="eyebrow">INCIDENT WORKSPACE</p><h2>Active incident</h2></div><span class="status-pill status-neutral">DEMO</span></div>
+            <div id="activeIncidentPanel" class="incident-content">
+              <div class="empty-state"><span class="empty-state-icon" aria-hidden="true">＋</span><strong>No active incident</strong><p>Start an SOS voice report or select a map location to test the response workflow.</p></div>
+            </div>
+          </section>
+          <div class="community-column">
+            <section class="panel">
+              <div class="panel-heading"><div><p class="eyebrow">LOCAL RESOURCES</p><h2>Nearby volunteers <span class="count-chip" id="volunteerCount">0</span></h2></div></div>
+              <div class="volunteers-list" id="volunteersList"><p class="empty-list">Loading volunteer data…</p></div>
+            </section>
+            <section class="panel">
+              <div class="panel-heading"><div><p class="eyebrow">SAFE LOCATIONS</p><h2>Shelters and amenities</h2></div></div>
+              <div class="volunteers-list" id="sheltersList"><p class="empty-list">Loading shelter data…</p></div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </div>
+    <footer class="site-footer"><span>Hope Seeker · Community response coordination prototype</span><span>For emergencies, call <a href="tel:112">112</a>.</span></footer>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/app.js"></script>
+</body>
+</html>
